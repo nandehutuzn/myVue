@@ -28,7 +28,7 @@ Observer.prototype = {
                 if(val === newVal){
                     return;
                 }
-
+                //console.log('observer set ', val, newVal);
                 val = newVal;
                 // 新的值是object的话，进行监听
                 childObj = observe(newVal);
@@ -52,7 +52,7 @@ function observe(value, vm){
 var uid = 0;
 // 属性订阅容器
 function Dep(){
-    this.uid = ++uid;
+    this.id = ++uid; // id，uid分清楚！ 对外属性时id
     this.subs = []; // Watcher容器
 }
 
@@ -71,6 +71,7 @@ Dep.prototype = {
         }
     },
     notify: function(){
+        //console.log('dep notify', this.subs);
         // 当data对象的属性发生改变时，会在属性的set方法中触发该函数
         this.subs.forEach(sub => sub.update());
     }

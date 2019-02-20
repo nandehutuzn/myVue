@@ -4,10 +4,10 @@ function Watcher(vm, expOrFn, cb){
     this.vm = vm;
     this.expOrFn = expOrFn;
     this.depIds = {};
-    
-    if(typeof expOrFn === 'function'){ // 如果监视的是computed计算属性，则getter为其本身
+    //console.log('Watcher ', expOrFn);
+    if(typeof expOrFn === 'function'){ // 如果监视的是函数，则getter为其本身
         this.getter = expOrFn;
-    } else { // 监视普通属性
+    } else { // 监视属性
         this.getter = this.parseGetter(expOrFn);
     }
 
@@ -34,10 +34,11 @@ Watcher.prototype = {
         // 说明不是一个新的属性，仅仅是改变了值而已，不做处理
         if(!this.depIds.hasOwnProperty(dep.id)){
             dep.addSub(this);
-            this.depIds[depIds] = dep;
+            this.depIds[dep.id] = dep;
         }
     },
     get: function(){
+        
         Dep.target = this;
         // 如果是属性，getter方法即是下面的parseGetter方法
         let value = this.getter.call(this.vm, this.vm);
@@ -46,10 +47,9 @@ Watcher.prototype = {
     },
     parseGetter: function(exp){
         if (/[^\w.$]/.test(exp)) return; 
-
         let exps = exp.split('.');
         return function(obj){
-            for(let i=0, len=exps.lengthl; i<len;i++){
+            for(let i = 0, len = exps.length; i < len; i++){
                 if(!obj) return;
                 // 这里取值时会调用属性的get，并且Dep.target为当前的Watcher，
                 // 所以可以将该Watcher加入到属性Dep容器的Subs内

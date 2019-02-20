@@ -13,9 +13,16 @@ function MyVue(options) {
 
     // 监控data对象的数据变化
     observe(data, this);
+
+    // 解析dom文档，主要是对其中的指令进行绑定
+    this.$compile = new Compile(options.el || document.body, this);
 }
 
 MyVue.prototype = {
+    $watch: function(key, cb, options){ // 给watch添加监控
+        new Watcher(this, key, cb);
+    },
+
     _proxyData: function(key){
         let me = this;
         Object.defineProperty(me, key, {
